@@ -10,6 +10,5 @@ setup(
     packages=find_packages(),
     license='MIT',
     long_description=open('README.md').read(),
-    install_requires=['dash',
-                      'labjack-ljm']
+    install_requires=['labjack-ljm']
 )
