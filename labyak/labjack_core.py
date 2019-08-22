@@ -14,7 +14,7 @@ class LabJack():
 
             print('Connected to LabJack (%i).'%(info[2]))
         except Exception as e:
-            print('Failed to connect to LabJack (%s): %s.'%(self.params['devid'], e))
+            print('Failed to connect to LabJack (%s): %s.'%(devid, e))
 
     def _query(self, register):
         ''' Reads the specified register. '''
