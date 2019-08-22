@@ -13,12 +13,18 @@ class PatternGenerator(LabJack):
     def array_to_bitmask(self, arr, channels):
         ''' Convert multidimensional array with one column for each channel to an array of bitmasks. '''
         y = np.zeros(len(arr))
+        ## prepare inhibit string
+        inhibit = ''
+        for i in range(23):
+            inhibit += str(int(23-i-1 not in channels))
+
         for i in range(len(arr)):
             states = arr[i,:]
             bitmask = 0
             for j in range(len(channels)):
                 bitmask = bitmask | (int(states[j]) << channels[j])
-            y[i] = bitmask
+            lower_bits = format(bitmask, '#010b')
+            y[i] = int(inhibit[-8:]+lower_bits[2:], 2)
         return y
 
     def stream_out(self, data, scanRate, loop = 0):
@@ -60,16 +66,6 @@ class PatternGenerator(LabJack):
         aNames = ['STREAM_SETTLING_US', 'STREAM_RESOLUTION_INDEX', 'STREAM_CLOCK_SOURCE']
         aValues = [0, 0, 0]
         self._write_array(aNames, aValues)
-
-        ''' Set DIO parameters '''
-        inhibit = ''
-        for i in range(23):
-            if 23-i-1 in channels:
-                inhibit += '0'
-            else:
-                inhibit += '1'
-        inhibit = int(inhibit, 2)
-        self._command('DIO_INHIBIT', inhibit)
 
         bitmask = 0
         for ch in channels:
