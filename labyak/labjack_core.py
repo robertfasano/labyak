@@ -32,6 +32,10 @@ class LabJack():
     def _write_array(self, registers, values):
         ljm.eWriteNames(self.handle, len(registers), registers, values)
 
+    def _write_dict(self, d):
+        ''' Writes values to registers according to the passed dictionary. '''
+        self._write_array(list(d.keys()), list(d.values()))
+
     def stop(self):
         ''' Stop streaming if currently running '''
         try:

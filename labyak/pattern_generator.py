@@ -40,19 +40,18 @@ class PatternGenerator(LabJack):
         self.stop()
         n = np.ceil(np.log10(2*(1+len(data)))/np.log10(2))
         buffer_size = 2**n
-        aNames =["STREAM_OUT0_TARGET",
-                 "STREAM_OUT0_BUFFER_SIZE",
-                 "STREAM_OUT0_ENABLE"]
-        aValues = [2500, buffer_size, 1]
-        self._write_array(aNames, aValues)
+        self._write_dict({"STREAM_OUT0_TARGET": 2500,
+                          "STREAM_OUT0_BUFFER_SIZE": buffer_size,
+
+                          "STREAM_OUT0_ENABLE": 1
+                          })
 
         data_register = ['STREAM_OUT0_BUFFER_U16']*len(data)
         self._write_array(data_register, list(data))
 
-        aNames = ["STREAM_OUT0_LOOP_SIZE",
-                       "STREAM_OUT0_SET_LOOP"]
-        aValues = [loop*len(data), 1]
-        self._write_array(aNames, aValues)
+        self._write_dict({"STREAM_OUT0_LOOP_SIZE": loop*len(data),
+                          "STREAM_OUT0_SET_LOOP": 1
+                          })
 
         self.aScanList.append(4800)           # add stream-out register to scan list
 
@@ -63,9 +62,10 @@ class PatternGenerator(LabJack):
 
         ''' Set stream parameters '''
         self.aScanList = []
-        aNames = ['STREAM_SETTLING_US', 'STREAM_RESOLUTION_INDEX', 'STREAM_CLOCK_SOURCE']
-        aValues = [0, 0, 0]
-        self._write_array(aNames, aValues)
+        self._write_dict({'STREAM_SETTLING_US': 0,
+                          'STREAM_RESOLUTION_INDEX': 0,
+                          'STREAM_CLOCK_SOURCE': 0
+                          })
 
         bitmask = 0
         for ch in channels:

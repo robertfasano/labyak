@@ -23,19 +23,17 @@ class WaveformGenerator(LabJack):
         buffer_size = 2**n
 
         for i in range(len(channels)):
-            aNames =["STREAM_OUT%i_TARGET"%i,
-                     "STREAM_OUT%i_BUFFER_SIZE"%i,
-                     "STREAM_OUT%i_ENABLE"%i]
-            ch = channels[i]
-            target = 1000+2*ch
-            aValues = [target, buffer_size, 1]
-            self._write_array(aNames, aValues)
+            self._write_dict({f'STREAM_OUT{i}_TARGET': 1000+2*channels[i],
+                              f'STREAM_OUT{i}_BUFFER_SIZE': buffer_size,
+                              f'STREAM_OUT{i}_ENABLE': 1
+                            })
+
             target = ['STREAM_OUT%i_BUFFER_F32'%i] * len(data)
             self._write_array(target, list(data))
-            aNames = ["STREAM_OUT%i_LOOP_SIZE"%i,
-                           "STREAM_OUT%i_SET_LOOP"%i]
-            aValues = [loop*len(data), 1]
-            self._write_array(aNames, aValues)
+
+            self._write_dict({f'STREAM_OUT{i}_LOOP_SIZE': loop*len(data),
+                              f'STREAM_OUT{i}_SET_LOOP': 1
+                            })
             self.aScanList.append(4800+i)           # add stream-out register to scan list
 
         scanRate = ljm.eStreamStart(self.handle, 1, len(self.aScanList), self.aScanList, scanRate)
@@ -45,32 +43,25 @@ class WaveformGenerator(LabJack):
 
         ''' Set stream parameters '''
         self.aScanList = []
-        aNames = ['STREAM_SETTLING_US', 'STREAM_RESOLUTION_INDEX', 'STREAM_CLOCK_SOURCE']
-        aValues = [0, 0, 0]
-        self._write_array(aNames, aValues)
+        self._write_dict({'STREAM_SETTLING_US': 0,
+                          'STREAM_RESOLUTION_INDEX': 0,
+                          'STREAM_CLOCK_SOURCE': 0
+                        })
 
-        # for channel in channels:
-        #     self.aScanList.extend(ljm.namesToAddresses(1, [channel])[0])
-
-    def prepare_stream_trigger(self, trigger):
-        if trigger is None:
+    def prepare_stream_trigger(self, ch):
+        if ch is None:
             self._command("STREAM_TRIGGER_INDEX", 0) # disable triggered stream
-            aNames = ['STREAM_TRIGGER_INDEX']
-            aValues = [0]
         else:
-            channel = 'DIO%i'%trigger
-            aNames = ["%s_EF_ENABLE"%channel, "%s_EF_INDEX"%channel,
-                      "%s_EF_OPTIONS"%channel, "%s_EF_VALUE_A"%channel,
-                      "%s_EF_ENABLE"%channel, 'STREAM_TRIGGER_INDEX']
-            aValues = [0, 3, 0, 2, 1, 2000+trigger]
+            self._write_dict({f"DIO{ch}_EF_ENABLE": 0,
+                              f"DIO{ch}_EF_INDEX": 3,
+                              f"DIO{ch}_EF_OPTIONS": 0,
+                              f"DIO{ch}_EF_VALUE_A": 2,
+                              f"DIO{ch}_EF_ENABLE": 1,
+                              "STREAM_TRIGGER_INDEX": 2000+ch
+                              })
             ljm.writeLibraryConfigS('LJM_STREAM_RECEIVE_TIMEOUT_MS',0)  #disable timeout
-        self._write_array(aNames, aValues)
 
-    def optimize_stream(self, array, period, max_samples = None):
-        buffer_size = 2**14
-        if max_samples is None:
-            max_samples = int(buffer_size/2)-1
-
+    def optimize_stream(self, array, period, max_samples = 8191):
         ''' Compute optimum scan rate and number of samples '''
         if self.deviceType == ljm.constants.dtT7:
             max_speed = 100000
