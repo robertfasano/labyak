@@ -36,7 +36,7 @@ class LabDAQ(LabJack):
                 state (int): 1 or 0
         '''
         if type(channel) is int:
-            channel = 'FIO%i'%channel
+            channel = 'DIO%i'%channel
         self._command(channel, state)
 
     def DIO_STATE(self, channels, states):
