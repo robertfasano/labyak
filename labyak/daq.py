@@ -42,13 +42,10 @@ class LabDAQ(LabJack):
     def DIO_STATE(self, channels, states):
         ''' Set multiple digital channels simultaneously. '''
         # prepare inhibit array
-        inhibit = ''
-        for i in range(23):
-            if 23-i-1 in channels:
-                inhibit += '0'
-            else:
-                inhibit += '1'
-        inhibit = int(inhibit, 2)
+        inhibit = 0
+        for ch in channels:
+            inhibit |= 1 << ch
+        inhibit = 0x7FFFFF-inhibit
         self._command('DIO_INHIBIT', inhibit)
 
         # set direction
@@ -64,4 +61,4 @@ class LabDAQ(LabJack):
         self._command('DIO_STATE', bitmask)
 
 if __name__ == '__main__':
-    daq = LabDAQ(devid='470018954')
+    daq = LabDAQ(devid='470018953')
