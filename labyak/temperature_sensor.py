@@ -2,12 +2,13 @@ from labyak import LabJack
 import numpy as np
 
 class TemperatureSensor(LabJack):
-    def __init__(self, device='ANY', connection='ANY', devid='ANY', averages=10, channels=[0, 2, 4, 6], arange=0.05):
+    def __init__(self, device='ANY', connection='ANY', devid='ANY', averages=10, channels=[0, 2, 4, 6], arange=0.05, type='J'):
         super().__init__(device=device, connection=connection, devid=devid)
         self.averages = averages
 
+        self.type = {'J': 21, 'K': 22}[type]
         for ch in channels:
-            self._write_dict({f'AIN{ch}_EF_INDEX': 22,
+            self._write_dict({f'AIN{ch}_EF_INDEX': self.type,
                               f'AIN{ch}_EF_CONFIG_B': 60052,
                               f'AIN{ch}_EF_CONFIG_D': 1,
                               f'AIN{ch}_EF_CONFIG_E': 0,
