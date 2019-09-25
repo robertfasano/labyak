@@ -29,6 +29,13 @@ class LabJack():
                 '''
         ljm.eWriteName(self.handle, register, value)
 
+    def _write(**kwargs):
+        ''' Updates registers according to the passed keyword arguments. For
+            example, to set DAC0 to 1 and DAC1 to 0 we would call
+                self._write(DAC0=1, DAC1=0)
+        '''
+        self._write_array(list(kwargs.keys()), list(kwargs.values()))
+        
     def _write_array(self, registers, values):
         ljm.eWriteNames(self.handle, len(registers), registers, values)
 
