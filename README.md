@@ -17,12 +17,12 @@ See the Jupyter notebook "Examples.ipynb" for a runnable version.
 Generate 1 V on channel DAC0 and measure it on ADC0:
 ```python
   labjack.analog.AOut(0, 1)
-  print(labjack.analog.AIn(0)
+  print(labjack.analog.AIn(0))
 ```
 Generate -6 V with an LJTick-DAC on the FIO0-1 block and measure it with ADC1:
 ```python
   labjack.analog.TDAC(0, -6)
-  print(labjack.analog.AIn(1)
+  print(labjack.analog.AIn(1))
 ```
 
 ### Digital I/O
