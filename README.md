@@ -1,5 +1,5 @@
 # labyak
-High-level wrappers around the LJM Python library for data acquisition and waveform or pattern generation
+High-level wrappers around the [LJM Python](https://github.com/labjack/labjack-ljm-python) library for data acquisition and waveform or pattern generation with the [LabJack T7](https://labjack.com/products/t7). Labyak does not yet officially support the LabJack T4, but it should be mostly compatible.
 
 To install with pip and git, run the following from the command line:
 
