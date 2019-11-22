@@ -46,6 +46,16 @@ class Stream:
         stream = resample(array, samples)
         return stream, scanRate
 
+    def AIn_start(self, channels, scan_rate):
+        self.stop()
+        scan_list = ljm.namesToAddresses(len(channels), channels)[0]
+
+        scans_per_read = int(scan_rate/2)
+        ljm.eStreamStart(self.labjack.handle, scans_per_read, len(channels), scan_list, scan_rate)
+
+    def AIn_read(self):
+        return ljm.eStreamRead(self.labjack.handle)
+
     def AOut(self, channels, data, scanRate, loop=0):
         self._start([1000+2*ch for ch in channels], data, scanRate, loop=loop, dtype='F32')
 

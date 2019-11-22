@@ -7,4 +7,5 @@ from .i2c import I2C
 from .stream import Stream
 from .waveform_generator import WaveformGenerator
 from .pattern_generator import PatternGenerator
+from .adc_stream import ADCStream
 from .core import LabJack

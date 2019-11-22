@@ -1,6 +1,6 @@
 ''' Base LabJack class implementing device connection and communication. '''
 from labjack import ljm
-from labyak.submodules import Analog, Digital, Temperature, PWM, SPI, I2C, Stream, WaveformGenerator, PatternGenerator
+from labyak import Analog, Digital, Temperature, PWM, SPI, I2C, Stream, WaveformGenerator, PatternGenerator, ADCStream
 
 class LabJack():
     def __init__(self, device='ANY', connection='ANY', devid='ANY'):
@@ -27,6 +27,7 @@ class LabJack():
         self.stream = Stream(self)
         self.waveform = WaveformGenerator(self)
         self.pattern = PatternGenerator(self)
+        self.adc_stream = ADCStream(self)
 
     def _query(self, register):
         ''' Reads the specified register. '''
