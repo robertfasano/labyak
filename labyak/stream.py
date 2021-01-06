@@ -66,7 +66,6 @@ class Stream:
         self.stop()
         n = np.ceil(np.log10(2*(1+len(data)))/np.log10(2))
         buffer_size = 2**n
-
         i = 0
         scan_list = []
         for ch in channels:
@@ -89,7 +88,8 @@ class Stream:
         if ch is None:
             self.labjack._command("STREAM_TRIGGER_INDEX", 0) # disable triggered stream
         else:
-            self.labjack._write_dict({f"DIO{ch}_EF_ENABLE": 0,
+            self.labjack._command(f"DIO{ch}_EF_ENABLE", 0) 
+            self.labjack._write_dict({
                               f"DIO{ch}_EF_INDEX": 3,
                               f"DIO{ch}_EF_OPTIONS": 0,
                               f"DIO{ch}_EF_VALUE_A": 2,
