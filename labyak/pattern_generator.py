@@ -56,3 +56,13 @@ class PatternGenerator:
         self.labjack.stream.configure()
         self.labjack.stream.set_inhibit(list(sequence.keys()))
         self.labjack.stream.DOut(data, scanRate, loop=1)
+
+    def stream_raw(self, channel, sequence, scanRate, loop=True):
+        ''' A lower level single-channel streaming alternative to the start() method allowing the
+            exact samples and scan rate to be specified rather than having both be
+            generated from a list of timestamps. Avoids possible timing inaccuracies
+            introduced by the optimize_stream method. '''
+        data = self.labjack.digital.array_to_bitmask(np.vstack(sequence), [channel])
+        self.labjack.stream.configure()
+        self.labjack.stream.set_inhibit([channel])
+        self.labjack.stream.DOut(data, scanRate, loop=loop)
