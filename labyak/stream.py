@@ -88,12 +88,13 @@ class Stream:
         if ch is None:
             self.labjack._command("STREAM_TRIGGER_INDEX", 0) # disable triggered stream
         else:
-            self.labjack._command(f"DIO{ch}_EF_ENABLE", 0) 
+            self.labjack._command(f"DIO{ch}_EF_ENABLE", 0)
             self.labjack._write_dict({
                               f"DIO{ch}_EF_INDEX": 3,
                               f"DIO{ch}_EF_OPTIONS": 0,
                               f"DIO{ch}_EF_VALUE_A": 2,
-                              f"DIO{ch}_EF_ENABLE": 1,
-                              "STREAM_TRIGGER_INDEX": 2000+ch
+                              f"DIO{ch}_EF_CONFIG_A": 2,
+                              "STREAM_TRIGGER_INDEX": 2000+ch,
+                              f"DIO{ch}_EF_ENABLE": 1
                               })
             ljm.writeLibraryConfigS('LJM_STREAM_RECEIVE_TIMEOUT_MS',0)  #disable timeout
