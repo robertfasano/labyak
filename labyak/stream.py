@@ -93,7 +93,7 @@ class Stream:
                               f"DIO{ch}_EF_INDEX": 3,
                               f"DIO{ch}_EF_OPTIONS": 0,
                               f"DIO{ch}_EF_VALUE_A": 2,
-                              f"DIO{ch}_EF_CONFIG_A": 2,
+                              f"DIO{ch}_EF_CONFIG_A": 1,
                               "STREAM_TRIGGER_INDEX": 2000+ch,
                               f"DIO{ch}_EF_ENABLE": 1
                               })
