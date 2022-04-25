@@ -14,7 +14,7 @@ class SPI:
                 MISO (int): the FIO channel to use for input
                 MOSI (int): the FIO channel to use for output
         '''
-        self._write_dict({
+        self.labjack._write_dict({
             "SPI_CS_DIONUM": CS,
             "SPI_CLK_DIONUM": CLK,
             "SPI_MISO_DIONUM": MISO,
@@ -42,5 +42,5 @@ class SPI:
         self.labjack._command("SPI_NUM_BYTES", numBytes)
 
         # Write the bytes
-        ljm.eWriteNameByteArray(self.handle, "SPI_DATA_TX", len(data), data)
+        ljm.eWriteNameByteArray(self.labjack.handle, "SPI_DATA_TX", len(data), data)
         self.labjack._command("SPI_GO", 1)  # Do the SPI communications
