@@ -44,6 +44,7 @@ class Stream:
             samples = int(period*scanRate)
 
         stream = resample(array, samples)
+        scanRate /= array.shape[1]    ## divide by number of channels being streamed
         return stream, scanRate
 
     def AIn_start(self, channels, scan_rate):
@@ -66,6 +67,7 @@ class Stream:
         self.stop()
         n = np.ceil(np.log10(2*(1+len(data)))/np.log10(2))
         buffer_size = 2**n
+
         i = 0
         scan_list = []
         for ch in channels:
@@ -75,7 +77,7 @@ class Stream:
                             })
 
             target = ['STREAM_OUT%i_BUFFER_%s'%(i, dtype)] * len(data)
-            self.labjack._write_array(target, list(data))
+            self.labjack._write_array(target, list(data[:, i]))
 
             self.labjack._write_dict({f'STREAM_OUT{i}_LOOP_SIZE': loop*len(data),
                               f'STREAM_OUT{i}_SET_LOOP': 1
@@ -88,13 +90,14 @@ class Stream:
         if ch is None:
             self.labjack._command("STREAM_TRIGGER_INDEX", 0) # disable triggered stream
         else:
-            self.labjack._command(f"DIO{ch}_EF_ENABLE", 0)
-            self.labjack._write_dict({
-                              f"DIO{ch}_EF_INDEX": 3,
-                              f"DIO{ch}_EF_OPTIONS": 0,
-                              f"DIO{ch}_EF_VALUE_A": 2,
+            self.labjack._write_dict({f"DIO{ch}_EF_ENABLE": 0
+                              })
+            self.labjack._write_dict({f"DIO{ch}_EF_INDEX": 3,
+                              f"DIO{ch}_EF_OPTIONS": 12,   ## current value: 0 (PWM Out)
+                              # f"DIO{ch}_EF_VALUE_A": 2,
                               f"DIO{ch}_EF_CONFIG_A": 1,
-                              "STREAM_TRIGGER_INDEX": 2000+ch,
-                              f"DIO{ch}_EF_ENABLE": 1
+                              f"DIO{ch}_EF_CONFIG_B": 1,
+                              f"DIO{ch}_EF_ENABLE": 1,
+                              "STREAM_TRIGGER_INDEX": 2000+ch
                               })
             ljm.writeLibraryConfigS('LJM_STREAM_RECEIVE_TIMEOUT_MS',0)  #disable timeout
